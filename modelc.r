@@ -107,7 +107,6 @@ build_interaction_term <- function(model, interaction_term, first=FALSE) {
       
       i = i + 1
       
-      print(sql)
     }
     return (sql)
 }
@@ -171,7 +170,6 @@ construct_select <- function(model) {
       next;
     }
     else if (is_interaction(parameter)) {
-      print(paste("Found an interaction", parameter))
       build_term <- build_interaction_term
     }
     else {
