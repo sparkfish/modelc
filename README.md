@@ -4,7 +4,7 @@ modelc is an R model object to SQL compiler. It generates SQL select statements 
 
 Its interface currently consists of a single function, `construct_select`, which takes a single input, namely an `lm` or `glm` model object.
 
-It currently supports gamma and quasipoisson family distributions with log link functions. 
+It currently supports GLM family distributions using log or identity link functions. 
 
 # Usage
 
