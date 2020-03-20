@@ -10,7 +10,7 @@ It currently supports gamma and quasipoisson family distributions with log link 
 
 Supposing the following data
 
-```
+```R
 a <- 1:10
 b <- 2*1:10 + runif(1) * 1.5
 c <- as.factor(1:10)
@@ -20,7 +20,7 @@ formula = b ~ a + c
 
 A vanilla linear model
 
-```
+```R
 linear_model <- lm(formula, data=df)
 construct_select(linear_model)
 
@@ -49,7 +49,7 @@ SELECT
 GLMs are also supported with log or identity link functions
 
 
-```
+```R
 glm_model <- glm(formula, data=df, family=Gamma(link="log"))
 construct_select(glm_model)
 ```
@@ -74,7 +74,7 @@ SELECT
 ```
 
 
-```
+```R
 glm_model_idlink <- glm(formula, data=df, family=Gamma(link="identity"))
 construct_select(glm_model_idlink)
 ```
