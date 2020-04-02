@@ -166,15 +166,12 @@ construct_select <- function(model) {
   for (parameter in parameters) {
 
     if (is_intercept(parameter)) {
-      cat(paste(parameter, "is an intercept\n"))
       build_term <- build_intercept
     }
     else if (is_interaction(parameter)) {
-      cat(paste(parameter, "is an interaction\n"))
       build_term <- build_interaction_term
     }
     else if (is_factor(parameter, model)) {
-      cat(paste(parameter, "is a factor\n"))
       next;
     }
     else {
