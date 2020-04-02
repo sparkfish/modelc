@@ -100,7 +100,7 @@ Note that your R session should be configured with `options(scipen=999)` to disa
 
 # Installing
 
-Ensure you have [R devtools](https://cran.r-project.org/web/packages/devtools/readme/README.html) installed globally.
+Ensure you have [R devtools](https://cran.r-project.org/web/packages/devtools/readme/README.html) installed globally. Then do
 
 ```R
 setwd("..") 
