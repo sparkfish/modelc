@@ -103,7 +103,9 @@ Note that your R session should be configured with `options(scipen=999)` to disa
 Ensure you have [R devtools](https://cran.r-project.org/web/packages/devtools/readme/README.html) installed globally.
 
 ```R
-setwd("..") # This line assumes your working directory is the `modelc/` root. Otherwise set the working directory to the folder *containing* modelc/
+setwd("..") 
+# The previous line assumes your working directory is the `modelc/` root. 
+# Otherwise set the working directory to the folder *containing* modelc/
 devtools::install("modelc")
 ```
 
