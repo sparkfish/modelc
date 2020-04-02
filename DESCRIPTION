@@ -1,0 +1,14 @@
+Package: modelc
+Title: A generalized linear model object to SQL compiler 
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Spark",
+           family = "Fish",
+           email = "info@sparkfish.com",
+           role = c("aut", "cre"))
+Description: modelc is an R model object to SQL compiler. It generates SQL select statements from linear and generalized linear models. Its interface currently consists of a single function, construct_select, which takes a single input, namely an lm or glm model object. It supports GLM family distributions using log or identity link functions.
+License: Proprietary
+Encoding: UTF-8
+LazyData: true
+Suggests: 
+    testthat (>= 2.1.0)

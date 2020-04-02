@@ -97,3 +97,18 @@ SELECT
 ```
 
 Note that your R session should be configured with `options(scipen=999)` to disable rendering numbers with scientific notation, otherwise `construct_select` may output invalid SQL.
+
+# Installing
+
+Ensure you have [R devtools](https://cran.r-project.org/web/packages/devtools/readme/README.html) installed globally.
+
+```R
+setwd("..") # This line assumes your working directory is the `modelc/` root. Otherwise set the working directory to the folder *containing* modelc/
+devtools::install("modelc")
+```
+
+Alternately you can use `devtools::install_github` by passing a a GitHub auth token.
+
+```R
+devtools::install_github("team-sparkfish/modelc", auth_token = my_secret_auth_token)
+```
