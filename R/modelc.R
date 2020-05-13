@@ -13,7 +13,8 @@ extract_parameter_coefficient <- function(model, parameter) {
 
 build_column_name <- function(parameter) {
   return(
-    paste("`", parameter, "`", sep="")
+    parameter
+    #paste('"', parameter, '"', sep="")
   )
 }
 
@@ -64,7 +65,7 @@ get_factor_name <- function(parameter, model) {
   factorlist <- names(model$xlevels)
   for (factor in factorlist) {
     if (grepl(factor, parameter, fixed=T)) {
-      return(factor)
+      return(trimws(factor))
     }
   }
   return("")
@@ -73,7 +74,8 @@ get_factor_name <- function(parameter, model) {
 extract_level <- function(parameter, factor) {
   level_start <- nchar(factor) + 1
   level_end <- nchar(parameter)
-  return(substring(parameter, level_start, level_end))
+  raw_level <- substring(parameter, level_start, level_end)
+  return(paste("'", trimws(raw_level), "'", sep=""))
 }
 
 has_parameter <- function(model, parameter) {
@@ -96,7 +98,7 @@ build_interaction_term <- function(model, interaction_term, first=FALSE) {
       if (is_factor(interaction_variable, model)) {
         factor <- get_factor_name(interaction_variable, model)
         level <- extract_level(interaction_variable, factor)
-        sql = paste(sql, "(CASE WHEN", factor, "=", level, "THEN", 1, "ELSE", 0, "END)")
+        sql = paste(sql, "(CASE WHEN", trimws(factor), "=", trimws(level), "THEN", 1, "ELSE", 0, "END)")
       }
       else {
         sql = paste(sql, interaction_variable, sep="")
@@ -128,12 +130,13 @@ build_factor_case_statements <- function(model, first=F) {
       formula_term <- paste(factor, level, sep="")
       if (has_parameter(model, formula_term)) {
         coefficient <- extract_parameter_coefficient(model, formula_term)
-        sql = paste(sql, "WHEN", factor, "=", level, "THEN", coefficient)
+        level <- paste("'", trimws(level), "'", sep="")
+        sql = paste(sql, "WHEN", trimws(factor), "=", level, "THEN", coefficient)
       }
     }
 
     if (!(sql %in% c(SQL_START_FIRST, SQL_START))) {
-      cases <- paste(cases, sql, "END)")
+      cases <- paste(cases, sql, "ELSE 0 END)")
     }
 
   }
@@ -159,7 +162,7 @@ apply_linkinverse <- function(model, sql) {
 }
 
 
-construct_select <- function(model) {
+modelc <- function(model) {
   parameters <- extract_parameters(model)
   select <- ""
   count <- 0
@@ -190,8 +193,7 @@ construct_select <- function(model) {
 
   select_with_linkinverse <- apply_linkinverse(model, select)
 
-  select <- paste("SELECT", select_with_linkinverse)
-  select <- gsub("  ", " ", trimws(select))
+  select <- gsub("  ", " ", trimws(select_with_linkinverse))
 
   return(select)
 }

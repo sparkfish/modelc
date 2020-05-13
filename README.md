@@ -2,7 +2,7 @@
 
 modelc is an R model object to SQL compiler. It generates SQL select statements from linear and generalized linear models. 
 
-Its interface currently consists of a single function, `construct_select`, which takes a single input, namely an `lm` or `glm` model object.
+Its interface currently consists of a single function, `modelc`, which takes a single input, namely an `lm` or `glm` model object.
 
 It currently supports GLM family distributions using log or identity link functions. 
 
@@ -22,7 +22,7 @@ A vanilla linear model
 
 ```R
 linear_model <- lm(formula, data=df)
-construct_select(linear_model)
+modelc(linear_model)
 
 ```
 
@@ -51,7 +51,7 @@ GLMs are also supported with log or identity link functions
 
 ```R
 glm_model <- glm(formula, data=df, family=Gamma(link="log"))
-construct_select(glm_model)
+modelc(glm_model)
 ```
 
 ``` sql
@@ -76,7 +76,7 @@ SELECT
 
 ```R
 glm_model_idlink <- glm(formula, data=df, family=Gamma(link="identity"))
-construct_select(glm_model_idlink)
+modelc(glm_model_idlink)
 ```
 
 ``` sql
@@ -96,7 +96,7 @@ SELECT
   )
 ```
 
-Note that your R session should be configured with `options(scipen=999)` to disable rendering numbers with scientific notation, otherwise `construct_select` may output invalid SQL.
+Note that your R session should be configured with `options(scipen=999)` to disable rendering numbers with scientific notation, otherwise `modelc` may output invalid SQL.
 
 # Installing
 
