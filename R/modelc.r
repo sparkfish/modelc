@@ -163,6 +163,10 @@ apply_linkinverse <- function(model, sql) {
 
 
 modelc <- function(model) {
+  # Disable scientific notation to avoid generation of invalid SQL
+  scipen_previous <- getOption("scipen")
+  options(scipen=999)
+
   parameters <- extract_parameters(model)
   select <- ""
   count <- 0
@@ -195,5 +199,7 @@ modelc <- function(model) {
 
   select <- gsub("  ", " ", trimws(select_with_linkinverse))
 
+  # Restore the original scipen setting
+  options(scipen=scipen_previous)
   return(select)
 }

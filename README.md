@@ -30,7 +30,6 @@ generates the following SQL
 
 
 ``` sql
-SELECT
   0.231808555545287 + 2 * `a` + (
     CASE
       WHEN c = 2 THEN -0.00000000000000193216758587821 * c
@@ -55,7 +54,6 @@ modelc(glm_model)
 ```
 
 ``` sql
-SELECT
   EXP(
     0.557874070609732 + 0.244938197625494 * `a` + (
       CASE
@@ -80,7 +78,6 @@ modelc(glm_model_idlink)
 ```
 
 ``` sql
-SELECT
   0.231808555545287 + 2 * `a` + (
     CASE
       WHEN c = 2 THEN 0.00000000000000139594865689472 * c
@@ -96,7 +93,7 @@ SELECT
   )
 ```
 
-Note that your R session should be configured with `options(scipen=999)` to disable rendering numbers with scientific notation, otherwise `modelc` may output invalid SQL.
+In order to avoid generating invalid SQL, `modelc` temporarily sets your `scipen` option to 999.
 
 # Installing
 
@@ -114,3 +111,7 @@ Alternately you can use `devtools::install_github` by passing a a GitHub auth to
 ```R
 devtools::install_github("team-sparkfish/modelc", auth_token = my_secret_auth_token)
 ```
+
+# Precision
+
+Note that you may encounter minor differences between the output of your R and generated SQL models depending on the precision with which your numeric types are represented in the database. To ensure parity between the two models, numeric types should have a precision of at least 17.
