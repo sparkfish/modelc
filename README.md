@@ -1,10 +1,12 @@
 # modelc
 
-modelc is an R model object to SQL compiler. It generates SQL select statements from linear and generalized linear models. 
+modelc is an R model object to SQL compiler. It generates SQL select statements from linear and generalized linear models.
 
 Its interface currently consists of a single function, `modelc`, which takes a single input, namely an `lm` or `glm` model object.
 
-It currently supports GLM family distributions using log or identity link functions. 
+It currently supports GLM family distributions using log or identity link functions.
+
+To import linear models directly to your SQL Server database, consider using [Castpack](https://github.com/team-sparkfish/castpack), which depends on `modelc`.
 
 # Usage
 
@@ -97,21 +99,22 @@ In order to avoid generating invalid SQL, `modelc` temporarily sets your `scipen
 
 # Installing
 
-Ensure you have [R devtools](https://cran.r-project.org/web/packages/devtools/readme/README.html) installed globally. Then do
+Using `devtools`:
 
 ```R
-setwd("..") 
-# The previous line assumes your working directory is the `modelc/` root. 
-# Otherwise set the working directory to the folder *containing* modelc/
-devtools::install("modelc")
-```
-
-Alternately you can use `devtools::install_github` by passing a a GitHub auth token.
-
-```R
-devtools::install_github("team-sparkfish/modelc", auth_token = my_secret_auth_token)
+install.packages("devtools")
+install.packages("remotes")
+remotes::install_github("team-sparkfish/modelc")
 ```
 
 # Precision
 
 Note that you may encounter minor differences between the output of your R and generated SQL models depending on the precision with which your numeric types are represented in the database. To ensure parity between the two models, numeric types should have a precision of at least 17.
+
+# Tests
+
+Tests are written using `testthat`. To run them, simply do
+
+``` R
+devtools::test()
+```

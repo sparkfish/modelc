@@ -1,7 +1,16 @@
+#' @importFrom stats coef
+#' @title Extract parameters from a linear model
+#' @param model A list with the same signature as the output of \code{lm} or \code{glm}
+#' @return A character vector of terms from a linear model
 extract_parameters <- function(model) {
   return(names(coef(model)))
 }
 
+#' @importFrom stats coef
+#' @title Extract the coefficient of a model parameter
+#' @param model A list with the same signature as the output of \code{lm} or \code{glm}
+#' @param parameter A character string corresponding to a model predictor
+#' @return A double corresponding to the coefficient, or 0 if the coefficient is missing
 extract_parameter_coefficient <- function(model, parameter) {
   coefficient_value <- coef(model)[[parameter]]
   if (!is.na(coefficient_value)) {
@@ -11,23 +20,28 @@ extract_parameter_coefficient <- function(model, parameter) {
   }
 }
 
-build_column_name <- function(parameter) {
-  return(
-    parameter
-    #paste('"', parameter, '"', sep="")
-  )
-}
-
+#' @title Build a SQL product
+#' @param lhs A character string representing the left hand side of the multiplication
+#' @param rhs A character string representing the right hand side of the multiplication
+#' @return A character string representing a valid SQL product term
 build_product <- function(lhs, rhs) {
   return(
     paste(lhs, "*", rhs, sep="")
   )
 }
 
+#' @title Check if the given parameter is the intercept
+#' @param parameter A parameter name.
+#' @return A logical representing whether the given parameter is the intercept
 is_intercept <- function(parameter) {
   return(parameter == '(Intercept)')
 }
 
+#' @title Get SQL representing the intercept term given the R model and parameter name
+#' @param model A list with the same signature as the output of \code{lm} or \code{glm}
+#' @param parameter A parameter name.
+#' @param first A logical flag signaling whether the term is the first term in the formula
+#' @return A SQL character string representing the intercept term in the model
 build_intercept <- function(model, parameter, first=FALSE) {
   coefficient <- extract_parameter_coefficient(model, parameter)
   if (!first) {
@@ -37,9 +51,14 @@ build_intercept <- function(model, parameter, first=FALSE) {
   }
 }
 
+#' Get SQL representing a continuous term in the model with no interactions
+#' @param model A list with the same signature as the output of \code{lm} or \code{glm}
+#' @param additive_term A parameter name.
+#' @param first A logical flag signaling whether the term is the first term in the formula
+#' @return A SQL character string representing an additive term
 build_additive_term <- function(model, additive_term, first=FALSE) {
   coefficient <- extract_parameter_coefficient(model, additive_term)
-  column <- build_column_name(additive_term)
+  column <- additive_term
   if (!first) {
     return(paste("+", build_product(coefficient, column)))
   } else {
@@ -47,10 +66,17 @@ build_additive_term <- function(model, additive_term, first=FALSE) {
   }
 }
 
+#' @title Detect if the given model term is an interaction
+#' @param parameter A parameter name.
+#' @return A logical representing whether or not the term is an interaction
 is_interaction <- function(parameter) {
   return(grepl(":", parameter, fixed=T));
 }
 
+#' @title Detect if the given model term is a factor
+#' @param parameter A parameter name.
+#' @param model A list with the same signature as the output of \code{lm} or \code{glm}
+#' @return A logical representing whether or not the term is a factor
 is_factor <- function(parameter, model) {
   factorlist <- names(model$xlevels)
   for (factor in factorlist) {
@@ -61,6 +87,10 @@ is_factor <- function(parameter, model) {
   return(FALSE)
 }
 
+#' @title Extract the factor name from an R model
+#' @param parameter A parameter name.
+#' @param model A list with the same signature as the output of \code{lm} or \code{glm}
+#' @return A character string representing the factor name
 get_factor_name <- function(parameter, model) {
   factorlist <- names(model$xlevels)
   for (factor in factorlist) {
@@ -71,6 +101,10 @@ get_factor_name <- function(parameter, model) {
   return("")
 }
 
+#' @title Extract the level from the factor name
+#' @param parameter A parameter name
+#' @param factor A factor term
+#' @return A SQL string literal representing the factor level
 extract_level <- function(parameter, factor) {
   level_start <- nchar(factor) + 1
   level_end <- nchar(parameter)
@@ -78,10 +112,20 @@ extract_level <- function(parameter, factor) {
   return(paste("'", trimws(raw_level), "'", sep=""))
 }
 
+#' @importFrom stats coef
+#' @title Check if an R model contains a coefficient
+#' @param model A list with the same signature as the output of \code{lm} or \code{glm}
+#' @param parameter A parameter name
+#' @return A logical representing whether a coefficient is present in the model
 has_parameter <- function(model, parameter) {
   parameter %in% names(coef(model));
 }
 
+#' @title Build a SQL interaction term
+#' @param model A list with the same signature as the output of \code{lm} or \code{glm}
+#' @param interaction_term The raw interaction term (a character string) from the R model
+#' @param first A logical flag signaling whether the term is the first term in the formula
+#' @return A character string representing a SQL interaction term
 build_interaction_term <- function(model, interaction_term, first=FALSE) {
 
     split_interaction <- strsplit(interaction_term, ":")[[1]]
@@ -114,6 +158,10 @@ build_interaction_term <- function(model, interaction_term, first=FALSE) {
     return (sql)
 }
 
+#' @title Build SQL CASE statements representing the factors in the model
+#' @param model A list with the same signature as the output of \code{lm} or \code{glm}
+#' @param first A logical flag signaling whether the term is the first term in the formula
+#' @return A character string representing a SQL CASE statement
 build_factor_case_statements <- function(model, first=F) {
   SQL_START_FIRST <- "(CASE"
   SQL_START <- "+ (CASE"
@@ -143,6 +191,10 @@ build_factor_case_statements <- function(model, first=F) {
   return(cases)
 }
 
+#' @title Wrap the model SQL in the appropriate link function inverse to return scaled predictions
+#' @param model A list with the same signature as the output of \code{lm} or \code{glm}
+#' @param sql A character string representing the SQL to be wrapped in the link inverse
+#' @return A character string representing a SQL model formula
 apply_linkinverse <- function(model, sql) {
   if (is.null(model$family)) {
     return(sql)
@@ -161,7 +213,10 @@ apply_linkinverse <- function(model, sql) {
   }
 }
 
-
+#' @title Compile an R model to a valid TSQL formula
+#' @param model A list with the same signature as the output of \code{lm} or \code{glm}
+#' @return A character string representing a SQL model formula
+#' @export
 modelc <- function(model) {
   # Disable scientific notation to avoid generation of invalid SQL
   scipen_previous <- getOption("scipen")
