@@ -1,13 +1,3 @@
-test_that("Queries are constructed from simple linear models", {
-  a <- c(1, 2, 3, 4, 5)
-  b <- c(1, 2, 3, 4, 5)
-  df <- data.frame(a, b)
-  model <- lm(b ~ a, data = df)
-  sql <- modelc::modelc(model)
-  expected <- "0.00000000000000119161639355869 + 1*a"
-  expect_equal(sql, expected)
-})
-
 test_that("Queries are constructed from linear models containing factors", {
   scipen_before <- getOption("scipen")
   options(scipen=999)
@@ -31,7 +21,6 @@ test_that("Queries are constructed from linear models containing factors", {
   c9_coefficient <- model$coefficients[["c9"]]
   c10_coefficient <- model$coefficients[["c10"]]
 
-  sql <- modelc::modelc(model)
   expected <- paste(
     intercept, " + ", a_coefficient, "*a", " + ",
     "(CASE WHEN c = ", "'2'", " THEN ", c2_coefficient,
@@ -46,6 +35,10 @@ test_that("Queries are constructed from linear models containing factors", {
     " ELSE 0 END)",
     sep=""
   )
+
+  sql <- modelc::modelc(model)
+
   expect_equal(sql, expected)
+
   options(scipen=scipen_before)
 })

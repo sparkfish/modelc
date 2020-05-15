@@ -1,5 +1,8 @@
 # modelc
 
+[![R build
+status](https://github.com/team-sparkfish/modelc/workflows/R-CMD-check/badge.svg)](https://github.com/team-sparkfish/modelc/actions)
+
 modelc is an R model object to SQL compiler. It generates SQL select statements from linear and generalized linear models.
 
 Its interface currently consists of a single function, `modelc`, which takes a single input, namely an `lm` or `glm` model object.
