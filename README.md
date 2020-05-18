@@ -7,7 +7,7 @@ modelc is an R model object to SQL compiler. It generates SQL select statements 
 
 Its interface currently consists of a single function, `modelc`, which takes a single input, namely an `lm` or `glm` model object.
 
-It currently supports GLM family distributions using log or identity link functions.
+It currently supports Gaussian and gamma family distributions using log or identity link functions.
 
 To import linear models directly to your SQL Server database, consider using [Castpack](https://github.com/team-sparkfish/castpack), which depends on `modelc`.
 

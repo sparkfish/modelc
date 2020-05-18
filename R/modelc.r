@@ -215,12 +215,16 @@ apply_linkinverse <- function(model, sql) {
 
 #' @title Compile an R model to a valid TSQL formula
 #' @param model A list with the same signature as the output of \code{lm} or \code{glm}
+#' @param modify_scipen A boolean indicating whether to modify the "scipen" option to avoid generating invalid SQL
 #' @return A character string representing a SQL model formula
 #' @export
-modelc <- function(model) {
+modelc <- function(model, modify_scipen = FALSE) {
+
   # Disable scientific notation to avoid generation of invalid SQL
-  scipen_previous <- getOption("scipen")
-  options(scipen=999)
+  if (modify_scipen) {
+    scipen_previous <- getOption("scipen")
+    options(scipen=999)
+   }
 
   parameters <- extract_parameters(model)
   select <- ""
@@ -254,7 +258,9 @@ modelc <- function(model) {
 
   select <- gsub("  ", " ", trimws(select_with_linkinverse))
 
-  # Restore the original scipen setting
-  options(scipen=scipen_previous)
-  return(select)
+ # Restore the original scipen setting
+ if (modify_scipen) {
+    options(scipen=scipen_previous)
+ }
+ return(select)
 }

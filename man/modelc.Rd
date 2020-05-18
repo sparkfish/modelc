@@ -4,10 +4,12 @@
 \alias{modelc}
 \title{Compile an R model to a valid TSQL formula}
 \usage{
-modelc(model)
+modelc(model, modify_scipen = FALSE)
 }
 \arguments{
 \item{model}{A list with the same signature as the output of \code{lm} or \code{glm}}
+
+\item{modify_scipen}{A boolean indicating whether to modify the "scipen" option to avoid generating invalid SQL}
 }
 \value{
 A character string representing a SQL model formula
