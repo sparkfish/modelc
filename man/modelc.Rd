@@ -4,7 +4,7 @@
 \alias{modelc}
 \title{Compile an R model to a valid TSQL formula}
 \usage{
-modelc(model, modify_scipen = FALSE)
+modelc(model, modify_scipen = TRUE)
 }
 \arguments{
 \item{model}{A list with the same signature as the output of \code{lm} or \code{glm}}
@@ -16,4 +16,23 @@ A character string representing a SQL model formula
 }
 \description{
 Compile an R model to a valid TSQL formula
+}
+\examples{
+a <- 1:10
+b <- 2*1:10
+c <- as.factor(a)
+df <- data.frame(a, b, c)
+formula = b ~ a + c
+
+# A vanilla linear model
+linear_model <- lm(formula, data = df)
+modelc::modelc(linear_model)
+
+# A generalized linear model with gamma family distribution and log link function
+gamma_loglink_model <- glm(formula, data = df, family=Gamma(link="log"))
+modelc::modelc(gamma_loglink_model)
+
+# A generalized linear model with gamma family distribution and identity link function
+gamma_idlink_model <- glm(formula, data = df, family=Gamma(link="identity"))
+modelc::modelc(gamma_idlink_model)
 }

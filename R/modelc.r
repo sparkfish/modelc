@@ -51,7 +51,7 @@ build_intercept <- function(model, parameter, first=FALSE) {
   }
 }
 
-#' Get SQL representing a continuous term in the model with no interactions
+#' @title Get SQL representing a continuous term in the model with no interactions
 #' @param model A list with the same signature as the output of \code{lm} or \code{glm}
 #' @param additive_term A parameter name.
 #' @param first A logical flag signaling whether the term is the first term in the formula
@@ -70,7 +70,7 @@ build_additive_term <- function(model, additive_term, first=FALSE) {
 #' @param parameter A parameter name.
 #' @return A logical representing whether or not the term is an interaction
 is_interaction <- function(parameter) {
-  return(grepl(":", parameter, fixed=T));
+  return(grepl(":", parameter, fixed=TRUE));
 }
 
 #' @title Detect if the given model term is a factor
@@ -80,7 +80,7 @@ is_interaction <- function(parameter) {
 is_factor <- function(parameter, model) {
   factorlist <- names(model$xlevels)
   for (factor in factorlist) {
-    if (grepl(factor, parameter, fixed=T)) {
+    if (grepl(factor, parameter, fixed=TRUE)) {
       return(TRUE)
     }
   }
@@ -162,7 +162,7 @@ build_interaction_term <- function(model, interaction_term, first=FALSE) {
 #' @param model A list with the same signature as the output of \code{lm} or \code{glm}
 #' @param first A logical flag signaling whether the term is the first term in the formula
 #' @return A character string representing a SQL CASE statement
-build_factor_case_statements <- function(model, first=F) {
+build_factor_case_statements <- function(model, first=FALSE) {
   SQL_START_FIRST <- "(CASE"
   SQL_START <- "+ (CASE"
   factors <- model$xlevels
@@ -217,13 +217,32 @@ apply_linkinverse <- function(model, sql) {
 #' @param model A list with the same signature as the output of \code{lm} or \code{glm}
 #' @param modify_scipen A boolean indicating whether to modify the "scipen" option to avoid generating invalid SQL
 #' @return A character string representing a SQL model formula
+#' @examples
+#' a <- 1:10
+#' b <- 2*1:10
+#' c <- as.factor(a)
+#' df <- data.frame(a, b, c)
+#' formula = b ~ a + c
+#'
+#' # A vanilla linear model
+#' linear_model <- lm(formula, data = df)
+#' modelc::modelc(linear_model)
+#'
+#' # A generalized linear model with gamma family distribution and log link function
+#' gamma_loglink_model <- glm(formula, data = df, family=Gamma(link="log"))
+#' modelc::modelc(gamma_loglink_model)
+#'
+#' # A generalized linear model with gamma family distribution and identity link function
+#' gamma_idlink_model <- glm(formula, data = df, family=Gamma(link="identity"))
+#' modelc::modelc(gamma_idlink_model)
 #' @export
-modelc <- function(model, modify_scipen = FALSE) {
+modelc <- function(model, modify_scipen = TRUE) {
 
   # Disable scientific notation to avoid generation of invalid SQL
   if (modify_scipen) {
-    scipen_previous <- getOption("scipen")
-    options(scipen=999)
+      oldOptions <- options()
+      options(scipen=999)
+      on.exit(options(oldOptions))
    }
 
   parameters <- extract_parameters(model)
@@ -258,9 +277,5 @@ modelc <- function(model, modify_scipen = FALSE) {
 
   select <- gsub("  ", " ", trimws(select_with_linkinverse))
 
- # Restore the original scipen setting
- if (modify_scipen) {
-    options(scipen=scipen_previous)
- }
  return(select)
 }

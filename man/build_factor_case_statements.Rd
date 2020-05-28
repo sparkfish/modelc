@@ -4,7 +4,7 @@
 \alias{build_factor_case_statements}
 \title{Build SQL CASE statements representing the factors in the model}
 \usage{
-build_factor_case_statements(model, first = F)
+build_factor_case_statements(model, first = FALSE)
 }
 \arguments{
 \item{model}{A list with the same signature as the output of \code{lm} or \code{glm}}
