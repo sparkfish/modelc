@@ -1,7 +1,7 @@
 # modelc
 
 [![R build
-status](https://github.com/team-sparkfish/modelc/workflows/R-CMD-check/badge.svg)](https://github.com/team-sparkfish/modelc/actions)
+status](https://github.com/sparkfish/modelc/workflows/R-CMD-check/badge.svg)](https://github.com/sparkfish/modelc/actions)
 
 modelc is an R model object to SQL compiler. It generates SQL select statements from linear and generalized linear models.
 
@@ -9,7 +9,7 @@ Its interface currently consists of a single function, `modelc`, which takes a s
 
 It currently supports Gaussian and gamma family distributions using log or identity link functions.
 
-To import linear models directly to your SQL Server database, consider using [Castpack](https://github.com/team-sparkfish/castpack), which depends on `modelc`.
+To import linear models directly to your SQL Server database, consider using [Castpack](https://github.com/sparkfish/castpack), which depends on `modelc`.
 
 # Usage
 
@@ -107,7 +107,7 @@ Using `devtools`:
 ```R
 install.packages("devtools")
 install.packages("remotes")
-remotes::install_github("team-sparkfish/modelc")
+remotes::install_github("sparkfish/modelc")
 ```
 
 # Precision
